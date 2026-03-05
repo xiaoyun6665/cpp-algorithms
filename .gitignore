@@ -1,0 +1,59 @@
+# 构建目录（常见名称）
+build/
+build-*/
+out/
+
+# CMake 生成文件
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+compile_commands.json
+*.cmake
+
+# 编译产物
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dll
+*.dylib
+*.exe
+*.out
+
+# C++20/23 模块产物
+*.gcm
+*.pcm
+*.ifc
+*.pch
+gcm.cache/          # Clang 模块缓存
+**/*.ifc.d           # MSVC 模块依赖文件
+**/*.pcm.d           # Clang 模块依赖文件
+
+# 测试输出
+Testing/
+test_output/
+*.test
+
+# 下载的依赖（如 FetchContent）
+_deps/
+
+# IDE 及编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# 日志文件
+*.log
+*.tmp
+
+# 编译缓存（ccache）
+.ccache/
+
+# 操作系统特定
+*.bak
