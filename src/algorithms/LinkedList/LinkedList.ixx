@@ -19,9 +19,9 @@ export namespace CA{
 
         explicit LinkedListNode(const T& data): value(data), next(nullptr){};
 
-        LinkedListNode(const LinkedListNode& other) = delete;
+        LinkedListNode(const LinkedListNode& other);
 
-        LinkedListNode& operator=(const LinkedListNode& other) = delete;
+        LinkedListNode& operator=(const LinkedListNode& other);
 
         LinkedListNode(LinkedListNode&& other) noexcept = default;
 
@@ -47,18 +47,34 @@ export namespace CA{
         }
     };
 
+
+    template<typename T>
+    LinkedListNode<T>::LinkedListNode(const LinkedListNode &other) {
+        value = other.value;
+        next = nullptr;
+    }
+
+    template<typename T>
+    LinkedListNode<T> & LinkedListNode<T>::operator=(const LinkedListNode &other) {
+        if (this != &other) {
+            value = other.value;
+            next = nullptr;
+        }
+        return *this;
+    }
+
     template<typename T>
     class LinkedList {
     private:
         std::unique_ptr<LinkedListNode<T>> head = nullptr;
-        std::unique_ptr<LinkedListNode<T>> tail = nullptr;
+        LinkedListNode<T>* tail = nullptr;
         size_t size = 0;
 
     public:
         LinkedList() = default;
 
-        LinkedList(const LinkedList& other) = delete;
-        LinkedList& operator=(const LinkedList& other) = delete;
+        LinkedList(const LinkedList& other);
+        LinkedList& operator=(const LinkedList& other);
 
         LinkedList(LinkedList&& other) noexcept = default;
         LinkedList& operator=(LinkedList&& other) noexcept = default;
@@ -86,6 +102,55 @@ export namespace CA{
         LinkedList& reverse();
     };
 
+    template<typename T>
+    LinkedList<T>::LinkedList(const LinkedList &other) {
+        if (other.head == nullptr) {
+            head = nullptr;
+            tail = nullptr;
+            size = 0;
+            return;
+        }
 
+        head = std::make_unique<LinkedListNode<T>>(other.head->getData());
 
+        auto currentNew = head.get();
+        auto currentOther = other.head.get();
+
+        while (currentOther->getNext()) {
+            currentOther = currentOther->getNext().get();
+            currentNew->setNext(std::make_unique<LinkedListNode<T>>(currentOther->getData()));
+            currentNew = currentNew->getNext().get();
+        }
+
+        tail = currentNew;
+    }
+
+    template<typename T>
+    LinkedList<T> & LinkedList<T>::operator=(const LinkedList &other) {
+        if (this == &other) {
+            return *this;
+        }
+
+        if (other.head == nullptr) {
+            head = nullptr;
+            tail = nullptr;
+            size = 0;
+            return *this;
+        }
+
+        head = std::make_unique<LinkedListNode<T>>(other.head->getData());
+
+        auto currentNew = head.get();
+        auto currentOther = other.head.get();
+
+        while (currentOther->getNext()) {
+            currentOther = currentOther->getNext().get();
+            currentNew->setNext(std::make_unique<LinkedListNode<T>>(currentOther->getData()));
+            currentNew = currentNew->getNext().get();
+        }
+
+        // 设置 tail 指针
+        tail = currentNew;
+        return *this;
+    }
 }
