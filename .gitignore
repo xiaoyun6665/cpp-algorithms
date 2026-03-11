@@ -42,6 +42,7 @@ _deps/
 # IDE 及编辑器
 .vscode/
 .idea/
+.vs/
 *.swp
 *.swo
 *~
