@@ -1,67 +1,70 @@
 module;
 #include <memory>
+#include <iostream>
 #include <functional>
+
+
 export module LinkedList;
 
 
 export namespace CA{
 
-    template<typename T>
-    class LinkedListNode {
-    private:
-        T value;
-        std::unique_ptr<LinkedListNode<T>> next;
+     template<typename T>
+     class LinkedListNode {
+     private:
+         T value;
+         std::unique_ptr<LinkedListNode<T>> next;
 
-    public:
-        LinkedListNode() = default;
+     public:
+         LinkedListNode() = default;
 
-        explicit LinkedListNode(T&& data) : value(std::move(data)), next(nullptr) {}
+         explicit LinkedListNode(T&& data) : value(std::move(data)), next(nullptr) {}
 
-        explicit LinkedListNode(const T& data): value(data), next(nullptr){};
+         explicit LinkedListNode(const T& data): value(data), next(nullptr){};
 
-        LinkedListNode(const LinkedListNode& other);
+         LinkedListNode(const LinkedListNode& other);
 
-        LinkedListNode& operator=(const LinkedListNode& other);
+         LinkedListNode& operator=(const LinkedListNode& other);
 
-        LinkedListNode(LinkedListNode&& other) noexcept = default;
+         LinkedListNode(LinkedListNode&& other) noexcept = default;
 
-        LinkedListNode& operator=(LinkedListNode&& other) noexcept = default;
+         LinkedListNode& operator=(LinkedListNode&& other) noexcept = default;
 
-        ~LinkedListNode() = default;
+         ~LinkedListNode() = default;
 
-        T& getData() { return value; }
-        const T& getData() const { return value; }
+         T& getData() { return value; }
+         const T& getData() const { return value; }
 
-        void setData(const T& data) { value = data; }
-        void setData(T&& data) { value = std::move(data); }
+         void setData(const T& data) { value = data; }
+         void setData(T&& data) { value = std::move(data); }
 
-        decltype(next)& getNext() { return next; }
-        const decltype(next)& getNext() const { return next; }
+         decltype(next)& getNext() { return next; }
+         const decltype(next)& getNext() const { return next; }
 
-        void setNext(std::unique_ptr<LinkedListNode<T>> node) {
-            next = std::move(node);
-        }
+         void setNext(std::unique_ptr<LinkedListNode<T>> node) {
+             next = std::move(node);
+         }
 
-        decltype(next) releaseNext() {
-            return std::move(next);
-        }
-    };
+         decltype(next) releaseNext() {
+             return std::move(next);
+         }
+     };
 
 
-    template<typename T>
-    LinkedListNode<T>::LinkedListNode(const LinkedListNode &other) {
-        value = other.value;
-        next = nullptr;
-    }
+     template<typename T>
+     LinkedListNode<T>::LinkedListNode(const LinkedListNode &other) {
+         value = other.value;
+         next = nullptr;
+     }
 
-    template<typename T>
-    LinkedListNode<T> & LinkedListNode<T>::operator=(const LinkedListNode &other) {
-        if (this != &other) {
-            value = other.value;
-            next = nullptr;
-        }
-        return *this;
-    }
+     template<typename T>
+     LinkedListNode<T> & LinkedListNode<T>::operator=(const LinkedListNode &other) {
+         if (this != &other) {
+             value = other.value;
+             next = nullptr;
+         }
+         return *this;
+     }
 
     template<typename T>
     class LinkedList {
@@ -81,25 +84,27 @@ export namespace CA{
 
         ~LinkedList() = default;
 
-        LinkedList& prepend(const T& data);
-        LinkedList& prepend(T&& data);
+        // LinkedList& prepend(const T& data);
+        // LinkedList& prepend(T&& data);
+        //
+        // LinkedList& append(const T& data);
+        // LinkedList& append(T&& data);
+        //
+        // LinkedList& insert(const T& data, size_t index);
+        // LinkedList& insert(T&& data, size_t index);
+        //
+        // LinkedList& remove(const T& data);
+        //
+        // template<typename Condition>
+        // LinkedList& find(Condition&&);
+        // LinkedList& find(const T& data);
+        //
+        // decltype(tail) deleteTail();
+        // decltype(head) deleteHead();
+        //
+        // LinkedList& reverse();
 
-        LinkedList& append(const T& data);
-        LinkedList& append(T&& data);
-
-        LinkedList& insert(const T& data, size_t index);
-        LinkedList& insert(T&& data, size_t index);
-
-        LinkedList& remove(const T& data);
-
-        template<typename Condition>
-        LinkedList& find(Condition&&);
-        LinkedList& find(const T& data);
-
-        decltype(tail) deleteTail();
-        decltype(head) deleteHead();
-
-        LinkedList& reverse();
+        size_t getSize() const { return size; }
     };
 
     template<typename T>
@@ -153,4 +158,4 @@ export namespace CA{
         tail = currentNew;
         return *this;
     }
-}
+ }
