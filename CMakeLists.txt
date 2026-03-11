@@ -1,4 +1,8 @@
-cmake_minimum_required(VERSION  3.30)
+cmake_minimum_required(VERSION  4.3)
+
+set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "451f2fe2-a8a2-47c3-bc32-94786d8fc91b")
+set(CMAKE_EXPERIMENTAL_CXX_MODULE_STD ON)
+
 
 project(CPP-Algorithms VERSION 0.0.1 LANGUAGES CXX)
 
@@ -9,7 +13,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_EXPERIMENTAL_CXX_MODULE_CMAKE_API ON)
 set(CMAKE_EXPERIMENTAL_CXX_MODULE_DYNDOC ON)  # 可选，用于模块依赖追踪
-
 set(CMAKE_CXX_SCAN_FOR_MODULES ON)
 
 add_library(cpp_algorithm_lib STATIC)
@@ -24,13 +27,17 @@ PUBLIC
     # 可以继续添加其他算法/数据结构模块
 )
 
+set_target_properties(cpp_algorithm_lib PROPERTIES
+        CXX_MODULE_STD 1  # ← Without this, import std; will fail!
+)
+
 # 编译器模块选项
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   target_compile_options(cpp_algorithm_lib PRIVATE -fmodules -fbuiltin-module-map)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_compile_options(cpp_algorithm_lib PRIVATE -fmodules-ts)
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-  target_compile_options(cpp_algorithm_lib PRIVATE /std:c++latest)
+  target_compile_options(cpp_algorithm_lib PRIVATE /std:c++latest /experimental:module )
 endif()
 
 option(BUILD_TESTING "Build tests" ON)

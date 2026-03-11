@@ -1,11 +1,6 @@
 module;
-#include <memory>
-#include <iostream>
-#include <functional>
-
-
 export module LinkedList;
-
+import std;
 
 export namespace CA{
 
