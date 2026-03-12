@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION  4.3)
 
 set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "451f2fe2-a8a2-47c3-bc32-94786d8fc91b")
-set(CMAKE_EXPERIMENTAL_CXX_MODULE_STD ON)
+set(CMAKE_CXX_MODULE_STD ON)
 
 
 project(CPP-Algorithms VERSION 0.0.1 LANGUAGES CXX)
@@ -25,10 +25,6 @@ PUBLIC
   FILES
     src/algorithms/LinkedList/LinkedList.ixx
     # 可以继续添加其他算法/数据结构模块
-)
-
-set_target_properties(cpp_algorithm_lib PROPERTIES
-        CXX_MODULE_STD 1  # ← Without this, import std; will fail!
 )
 
 # 编译器模块选项

@@ -3,7 +3,6 @@ export module LinkedList;
 import std;
 
 export namespace CA{
-
      template<typename T>
      class LinkedListNode {
      private:
@@ -13,9 +12,9 @@ export namespace CA{
      public:
          LinkedListNode() = default;
 
-         explicit LinkedListNode(T&& data) : value(std::move(data)), next(nullptr) {}
-
-         explicit LinkedListNode(const T& data): value(data), next(nullptr){};
+         template<typename U>
+         requires std::constructible_from<T, U>
+         explicit LinkedListNode(U&& data) : value(std::forward<U>(data)), next(nullptr) {}
 
          LinkedListNode(const LinkedListNode& other);
 
@@ -79,17 +78,20 @@ export namespace CA{
 
         ~LinkedList() = default;
 
-        // LinkedList& prepend(const T& data);
-        // LinkedList& prepend(T&& data);
-        //
-        // LinkedList& append(const T& data);
-        // LinkedList& append(T&& data);
-        //
-        // LinkedList& insert(const T& data, size_t index);
-        // LinkedList& insert(T&& data, size_t index);
-        //
+        template<typename U>
+         requires std::constructible_from<T, U>
+        LinkedList& prepend(U&& data);
+
+        template<typename U>
+         requires std::constructible_from<T, U>
+        LinkedList& append(U&& data);
+
+         template<typename U>
+         requires std::constructible_from<T, U>
+        LinkedList& insert(U&& data, size_t index);
+
         // LinkedList& remove(const T& data);
-        //
+
         // template<typename Condition>
         // LinkedList& find(Condition&&);
         // LinkedList& find(const T& data);
@@ -121,7 +123,7 @@ export namespace CA{
             currentNew->setNext(std::make_unique<LinkedListNode<T>>(currentOther->getData()));
             currentNew = currentNew->getNext().get();
         }
-
+        size = other.getSize();
         tail = currentNew;
     }
 
@@ -130,27 +132,75 @@ export namespace CA{
         if (this == &other) {
             return *this;
         }
-
         if (other.head == nullptr) {
             head = nullptr;
             tail = nullptr;
             size = 0;
             return *this;
         }
-
         head = std::make_unique<LinkedListNode<T>>(other.head->getData());
-
         auto currentNew = head.get();
         auto currentOther = other.head.get();
-
         while (currentOther->getNext()) {
             currentOther = currentOther->getNext().get();
             currentNew->setNext(std::make_unique<LinkedListNode<T>>(currentOther->getData()));
             currentNew = currentNew->getNext().get();
         }
-
-        // 设置 tail 指针
         tail = currentNew;
+        size=other.getSize();
         return *this;
     }
- }
+
+    template<typename T>
+    template<typename U>
+    requires std::constructible_from<T, U>
+    LinkedList<T> & LinkedList<T>::prepend(U &&data) {
+        auto newNode = std::make_unique<LinkedListNode<T>>(std::forward<U>(data));
+        newNode->setNext(std::move(head));
+        this->head = std::move(newNode);
+        if (tail == nullptr) {
+            this->tail = this->head.get();
+        }
+        size++;
+        return *this;
+    }
+
+    template<typename T>
+    template<typename U>
+    requires std::constructible_from<T, U>
+    LinkedList<T> & LinkedList<T>::append(U &&data) {
+        auto newNode = std::make_unique<LinkedListNode<T>>(std::forward<U>(data));
+        if (head == nullptr) {
+            head = std::move(newNode);
+            tail = head.get();
+        } else {
+            tail->setNext(std::move(newNode));
+            tail = tail->getNext().get();
+        }
+        size++;
+        return *this;
+    }
+
+    template<typename T>
+    template<typename U> requires std::constructible_from<T, U>
+    LinkedList<T> & LinkedList<T>::insert(U &&data, size_t index) {
+        if (index > size) {
+            throw std::out_of_range("Index out of range");
+        }
+        if (index == 0) {
+            prepend(std::forward<U>(data));
+        } else if (index == size) {
+            append(std::forward<U>(data));
+        } else {
+            auto newNode = std::make_unique<LinkedListNode<T>>(std::forward<U>(data));
+            auto current = head.get();
+            for (size_t i = 0; i < index - 1; i++) {
+                current = current->getNext().get();
+            }
+            newNode->setNext(std::move(current->getNext()));
+            current->setNext(std::move(newNode));
+            size++;
+        }
+        return *this;
+    }
+}
