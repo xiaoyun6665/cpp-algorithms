@@ -90,7 +90,7 @@ export namespace CA{
          requires std::constructible_from<T, U>
         LinkedList& insert(U&& data, size_t index);
 
-        // LinkedList& remove(const T& data);
+        LinkedList& remove(const T& data);
 
         // template<typename Condition>
         // LinkedList& find(Condition&&);
@@ -200,6 +200,36 @@ export namespace CA{
             newNode->setNext(std::move(current->getNext()));
             current->setNext(std::move(newNode));
             size++;
+        }
+        return *this;
+    }
+
+    template<typename T>
+    LinkedList<T> & LinkedList<T>::remove(const T &data) {
+        if (head == nullptr) {
+            return *this;
+        }
+        if (head->getData() == data) {
+            head = std::move(head->getNext());
+            size--;
+            if (size == 0) {
+                tail = nullptr;
+            }
+            return *this;
+        }
+
+        auto current = head.get();
+        while (current->getNext() != nullptr) {
+            if (current->getNext()->getData() == data) {
+                auto nodeToDelete = std::move(current->getNext());
+                current->setNext(std::move(nodeToDelete->getNext()));
+                size--;
+                if (current->getNext() == nullptr) {
+                    tail = current;
+                }
+                return *this;
+            }
+            current = current->getNext().get();
         }
         return *this;
     }

@@ -272,3 +272,172 @@ TEST(TestLinkedList, Test_insert_large_index) {
     // Insert at a very large index (should throw)
     EXPECT_THROW(list.insert(2, SIZE_MAX), std::out_of_range);
 }
+
+TEST(TestLinkedList, Test_remove_from_empty_list) {
+    CA::LinkedList<int> list;
+
+    list.remove(42);
+
+    EXPECT_EQ(list.getSize(), 0);
+}
+
+TEST(TestLinkedList, Test_remove_head_element) {
+    CA::LinkedList<int> list;
+    list.append(1);
+    list.append(2);
+    list.append(3);
+
+    list.remove(1);
+
+    EXPECT_EQ(list.getSize(), 2);
+}
+
+TEST(TestLinkedList, Test_remove_tail_element) {
+    CA::LinkedList<int> list;
+    list.append(1);
+    list.append(2);
+    list.append(3);
+
+    list.remove(3);
+
+    EXPECT_EQ(list.getSize(), 2);
+}
+
+TEST(TestLinkedList, Test_remove_middle_element) {
+    CA::LinkedList<int> list;
+    list.append(1);
+    list.append(2);
+    list.append(3);
+
+    list.remove(2);
+
+    EXPECT_EQ(list.getSize(), 2);
+}
+
+TEST(TestLinkedList, Test_remove_single_element_list) {
+    CA::LinkedList<int> list;
+    list.append(42);
+
+    list.remove(42);
+
+    EXPECT_EQ(list.getSize(), 0);
+    EXPECT_TRUE(list.getSize() == 0);
+}
+
+TEST(TestLinkedList, Test_remove_non_existent_element) {
+    CA::LinkedList<int> list;
+    list.append(1);
+    list.append(2);
+    list.append(3);
+
+    list.remove(99);
+
+    EXPECT_EQ(list.getSize(), 3);
+}
+
+TEST(TestLinkedList, Test_remove_first_occurrence_duplicate_values) {
+    CA::LinkedList<int> list;
+    list.append(1);
+    list.append(2);
+    list.append(2);
+    list.append(3);
+
+    list.remove(2);
+
+    EXPECT_EQ(list.getSize(), 3);
+}
+
+TEST(TestLinkedList, Test_remove_all_elements_one_by_one) {
+    CA::LinkedList<int> list;
+    list.append(1);
+    list.append(2);
+    list.append(3);
+
+    list.remove(2);
+    list.remove(1);
+    list.remove(3);
+
+    EXPECT_EQ(list.getSize(), 0);
+}
+
+TEST(TestLinkedList, Test_remove_with_method_chaining) {
+    CA::LinkedList<int> list;
+    list.append(1);
+    list.append(2);
+    list.append(3);
+    list.append(4);
+
+    list.remove(2).remove(4);
+
+    EXPECT_EQ(list.getSize(), 2);
+}
+
+TEST(TestLinkedList, Test_remove_after_prepend) {
+    CA::LinkedList<int> list;
+    list.prepend(3);
+    list.prepend(2);
+    list.prepend(1);
+
+    list.remove(2);
+
+    EXPECT_EQ(list.getSize(), 2);
+}
+
+TEST(TestLinkedList, Test_remove_preserves_tail_pointer) {
+    CA::LinkedList<int> list;
+    list.append(1);
+    list.append(2);
+    list.append(3);
+
+    list.remove(3);
+
+    EXPECT_EQ(list.getSize(), 2);
+    list.remove(2);
+    EXPECT_EQ(list.getSize(), 1);
+}
+
+TEST(TestLinkedList, Test_remove_from_copied_list) {
+    CA::LinkedList<int> list1;
+    list1.append(1);
+    list1.append(2);
+    list1.append(3);
+
+    CA::LinkedList<int> list2 = list1;
+    list2.remove(2);
+
+    EXPECT_EQ(list2.getSize(), 2);
+    EXPECT_EQ(list1.getSize(), 3);
+}
+
+TEST(TestLinkedList, Test_remove_from_moved_list) {
+    CA::LinkedList<int> list1;
+    list1.append(1);
+    list1.append(2);
+    list1.append(3);
+
+    CA::LinkedList<int> list2(std::move(list1));
+    list2.remove(2);
+
+    EXPECT_EQ(list2.getSize(), 2);
+}
+
+TEST(TestLinkedList, Test_remove_consecutive_duplicates) {
+    CA::LinkedList<int> list;
+    list.append(1);
+    list.append(1);
+    list.append(1);
+    list.append(2);
+
+    list.remove(1);
+
+    EXPECT_EQ(list.getSize(), 3);
+}
+
+TEST(TestLinkedList, Test_remove_only_element_then_append_again) {
+    CA::LinkedList<int> list;
+    list.append(10);
+    list.remove(10);
+    list.append(20);
+
+    EXPECT_EQ(list.getSize(), 1);
+}
