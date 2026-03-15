@@ -7,7 +7,7 @@ export namespace CA{
      class LinkedListNode {
      private:
          T value;
-         std::unique_ptr<LinkedListNode<T>> next;
+         std::unique_ptr<LinkedListNode<T>> next = nullptr;
 
      public:
          LinkedListNode() = default;
@@ -92,14 +92,20 @@ export namespace CA{
 
         LinkedList& remove(const T& data);
 
-        // template<typename Condition>
-        // LinkedList& find(Condition&&);
-        // LinkedList& find(const T& data);
-        //
-        // decltype(tail) deleteTail();
-        // decltype(head) deleteHead();
-        //
-        // LinkedList& reverse();
+         template<std::predicate<const T&> Predicate>
+         std::optional<std::reference_wrapper<LinkedListNode<T>>> find(Predicate&& pred);
+
+         template<std::predicate<const T&> Predicate>
+         std::optional<std::reference_wrapper<const LinkedListNode<T>>> find(Predicate&& pred) const;
+
+         std::optional<std::reference_wrapper<const LinkedListNode<T>>> find(const T& data) const;
+
+         std::optional<std::reference_wrapper<LinkedListNode<T>>> find(const T& data);
+
+        std::unique_ptr<LinkedListNode<T>> deleteTail();
+        std::unique_ptr<LinkedListNode<T>> deleteHead();
+
+        LinkedList& reverse();
 
         size_t getSize() const { return size; }
     };
@@ -112,12 +118,9 @@ export namespace CA{
             size = 0;
             return;
         }
-
         head = std::make_unique<LinkedListNode<T>>(other.head->getData());
-
         auto currentNew = head.get();
         auto currentOther = other.head.get();
-
         while (currentOther->getNext()) {
             currentOther = currentOther->getNext().get();
             currentNew->setNext(std::make_unique<LinkedListNode<T>>(currentOther->getData()));
@@ -217,7 +220,6 @@ export namespace CA{
             }
             return *this;
         }
-
         auto current = head.get();
         while (current->getNext() != nullptr) {
             if (current->getNext()->getData() == data) {
@@ -231,6 +233,113 @@ export namespace CA{
             }
             current = current->getNext().get();
         }
+        return *this;
+    }
+
+    template<typename T>
+    template<std::predicate<const T&> Predicate>
+    std::optional<std::reference_wrapper<LinkedListNode<T>>> LinkedList<T>::find(Predicate&& pred) {
+        auto current = head.get();
+        while (current != nullptr) {
+            if (pred(current->getData())) {
+                return std::ref(*current);
+            }
+            current = current->getNext().get();
+        }
+        return std::nullopt;
+    }
+
+    template<typename T>
+    template<std::predicate<const T&> Predicate>
+    std::optional<std::reference_wrapper<const LinkedListNode<T>>> LinkedList<T>::find(Predicate&& pred) const {
+        auto current = head.get();
+        while (current != nullptr) {
+            if (pred(current->getData())) {
+                return std::cref(*current);
+            }
+            current = current->getNext().get();
+        }
+        return std::nullopt;
+    }
+
+    template<typename T>
+       std::optional<std::reference_wrapper<LinkedListNode<T>>> LinkedList<T>::find(const T& data) {
+        auto current = head.get();
+        while (current != nullptr) {
+            if (current->getData() == data) {
+                return std::ref(*current);
+            }
+            current = current->getNext().get();
+        }
+        return std::nullopt;
+    }
+
+    template<typename T>
+    std::optional<std::reference_wrapper<const LinkedListNode<T>>> LinkedList<T>::find(const T& data) const {
+        auto current = head.get();
+        while (current != nullptr) {
+            if (current->getData() == data) {
+                return std::cref(*current);
+            }
+            current = current->getNext().get();
+        }
+        return std::nullopt;
+    }
+
+    template<typename T>
+    std::unique_ptr<LinkedListNode<T>> LinkedList<T>::deleteTail() {
+        if (head == nullptr) {
+            return nullptr;
+        }
+        std::unique_ptr<LinkedListNode<T>> oldTail;
+        if (head.get() == tail) {
+            oldTail = std::move(head);
+            head = nullptr;
+            tail = nullptr;
+            size = 0;
+            return oldTail;
+        }
+        auto current = head.get();
+        while (current->getNext().get() != tail) {
+            current = current->getNext().get();
+        }
+        oldTail = std::move(current->getNext());
+        current->setNext(nullptr);
+        tail = current;
+        size--;
+        return oldTail;
+    }
+
+    template<typename T>
+    std::unique_ptr<LinkedListNode<T>> LinkedList<T>::deleteHead() {
+        if (head == nullptr) {
+            return nullptr;
+        }
+        auto oldHead = std::move(head);
+        if (oldHead->getNext()) {
+            head = std::move(oldHead->getNext());
+        } else {
+            tail = nullptr;
+        }
+        size--;
+        return oldHead;
+    }
+
+    template<typename T>
+    LinkedList<T> & LinkedList<T>::reverse() {
+        if (size <= 1) {
+            return *this;
+        }
+        tail = head.get();
+        auto current = std::move(head);
+        std::unique_ptr<LinkedListNode<T>> previous = nullptr;
+        while (current != nullptr) {
+            auto next = std::move(current->getNext());
+            current->setNext(std::move(previous));
+            previous = std::move(current);
+            current = std::move(next);
+        }
+        head = std::move(previous);
         return *this;
     }
 }
