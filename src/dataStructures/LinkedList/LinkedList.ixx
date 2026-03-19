@@ -29,8 +29,11 @@ export namespace CA{
          T& getData() { return value; }
          const T& getData() const { return value; }
 
-         void setData(const T& data) { value = data; }
-         void setData(T&& data) { value = std::move(data); }
+         template<typename U>
+         requires std::assignable_from<T&, U>
+         void setData(U&& data) {
+             value = std::forward<U>(data);
+         }
 
          decltype(next)& getNext() { return next; }
          const decltype(next)& getNext() const { return next; }

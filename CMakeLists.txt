@@ -23,7 +23,8 @@ PUBLIC
   FILE_SET CXX_MODULES
   BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/src   # 模块查找基目录
   FILES
-    src/algorithms/LinkedList/LinkedList.ixx
+        src/dataStructures/LinkedList/LinkedList.ixx
+        src/dataStructures/DoublyLinkedList/DoublyLinkedList.ixx
     # 可以继续添加其他算法/数据结构模块
 )
 

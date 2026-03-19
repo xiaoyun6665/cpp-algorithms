@@ -11,5 +11,5 @@ FetchContent_MakeAvailable(googletest)
 include(GoogleTest)
 
 # 添加镜像子目录
-add_subdirectory(algorithms)
+add_subdirectory(dataStructures)
 # add_subdirectory(dataStructures)
